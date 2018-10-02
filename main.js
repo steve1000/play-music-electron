@@ -1,20 +1,56 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const { app, BrowserWindow, globalShortcut } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
+function sendInput(webContents, event) {
+  webContents.sendInputEvent(event)
+}
+
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({ width: 1200, height: 900 })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
+  // Create some keyboard shortcut listeners
+  globalShortcut.register('MediaNextTrack', () => {
+    console.log('next track press...')
+    if (mainWindow.isFocused()) {
+      return sendInput(mainWindow.webContents, {
+        type: 'keyDown',
+        keyCode: 'Right'
+      })
+    }
+    mainWindow.focus('blah')
+    mainWindow.show()
+  })
+
+  mainWindow.on('focus', (blah) => {
+    console.log('blah: ', blah)
+    sendInput(mainWindow.webContents, {
+      type: 'keyDown',
+      keyCode: 'Right'
+    })
+  })
+
+  globalShortcut.register('MediaPlayPause', () => {
+    // console.log('playa/pause pressed')
+    // mainWindow.on('focus', () => {
+    //   console.log('app is focussed...')
+    //   mainWindow.webContents.focus()
+    // })
+    // mainWindow.show()
+    // mainWindow.webContents.sendInputEvent({
+    //   type: 'keyDown',
+    //   keyCode: 'Space'
+    // })
+  })
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
